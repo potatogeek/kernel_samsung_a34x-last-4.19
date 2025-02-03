@@ -429,9 +429,6 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Pad 0-size buffers so they get assigned unique addresses */
-	size = max(size, sizeof(void *));
-
 #ifdef CONFIG_SAMSUNG_FREECESS
 	if (is_async && (alloc->free_async_space < 3 * (size + sizeof(struct binder_buffer))
 		|| (alloc->free_async_space < alloc->buffer_size / 4))) {
@@ -444,6 +441,9 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
 			binder_report(p, -1, "free_buffer_full", is_async);
 	}
 #endif
+
+	/* Pad 0-size buffers so they get assigned unique addresses */
+	size = max(size, sizeof(void *));
 
 	if (is_async && alloc->free_async_space < size) {
 		binder_alloc_debug(BINDER_DEBUG_BUFFER_ALLOC,
