@@ -175,6 +175,7 @@ config ARM64
 	select SWIOTLB
 	select SYSCTL_EXCEPTION_TRACE
 	select THREAD_INFO_IN_TASK
+	select ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
 	help
 	  ARM 64-bit (AArch64) Linux support.
 
@@ -983,7 +984,7 @@ config FORCE_MAX_ZONEORDER
 
 config UNMAP_KERNEL_AT_EL0
 	bool "Unmap kernel when running in userspace (aka \"KAISER\")" if EXPERT
-	default y
+	default n
 	help
 	  Speculation attacks against some high-performance processors can
 	  be used to bypass MMU permission checks and leak kernel data to
@@ -995,7 +996,7 @@ config UNMAP_KERNEL_AT_EL0
 
 config HARDEN_BRANCH_PREDICTOR
 	bool "Harden the branch predictor against aliasing attacks" if EXPERT
-	default y
+	default n
 	help
 	  Speculation attacks against some high-performance processors rely on
 	  being able to manipulate the branch predictor for a victim context by
@@ -1034,6 +1035,15 @@ config ARM64_SSBD
 	  by speculative loads.
 
 	  If unsure, say Y.
+
+config MITIGATE_SPECTRE_BRANCH_HISTORY
+	bool "Mitigate Spectre style attacks against branch history" if EXPERT
+	default y
+	help
+	  Speculation attacks against some high-performance processors can
+	  make use of branch history to influence future speculation.
+	  When taking an exception from user-space, a sequence of branches
+	  or a firmware call overwrites the branch history.
 
 config ARM64_TAGGED_ADDR_ABI
 	bool "Enable the tagged user addresses syscall ABI"
@@ -1465,6 +1475,14 @@ config KUSER_HELPERS
 config SYSVIPC_COMPAT
 	def_bool y
 	depends on COMPAT && SYSVIPC
+
+config MTK_LPM_TSP_IRQ_REMAIN
+	bool "Enable mtk_lpm, irq-remain feature"
+	depends on SEC_FACTORY
+	default n
+	help
+	  It add mtk_lpm, irq-remain list.
+	  It's samsung's tsp feature.
 
 menu "Power management options"
 
