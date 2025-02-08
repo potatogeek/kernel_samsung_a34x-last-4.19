@@ -10,7 +10,7 @@
 [ -z $DO_CLEAN ] && DO_CLEAN=false
 [ -z $LTO ] && LTO=thin
 [ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh"
-[ -z $DEFAULT_AK3_REPO ] && DEFAULT_AK3_REPO="git clone https://github.com/rsuntk/AnyKernel3.git"
+[ -z $DEFAULT_AK3_REPO ] && DEFAULT_AK3_REPO="https://github.com/rsuntk/AnyKernel3.git"
 [ -z $DEVICE ] && DEVICE="A346E"
 
 # special rissu's path. linked to his toolchains
@@ -42,8 +42,7 @@ setconfig() { # fmt: setconfig enable/disable <NAME>
 	fi
 }
 clone_ak3() {
-	[ ! -d $(pwd)/AnyKernel3 ] && $DEFAULT_AK3_REPO --depth=1
-	rm -rf AnyKernel3/.git
+	[ ! -d $(pwd)/AnyKernel3 ] && git clone `echo $DEFAULT_AK3_REPO` --depth=1 AnyKernel3 && rm -rf AnyKernel3/.git
 }
 gen_getutsrelease() {
 # generate simple c file
@@ -90,8 +89,6 @@ usage() {
 	printf "Misc:\n"
 	printf "\tPOST_BUILD_CLEAN: Clean post build: (opt:boolean)\n"
 	printf "\tLTO: Use Link-time Optimization; options: (opt: none, thin, full)\n"
-	printf "\tLLVM: Use all llvm toolchains to build: (opt: 1)\n"
-	printf "\tLLVM_IAS: Use llvm integrated assembler: (opt: 1)\n"
 	exit;
 }
 
@@ -184,9 +181,6 @@ pr_sum() {
 	echo -e "Arch: $ARCH"
 	echo -e "Defconfig: $BUILD_DEFCONFIG"
 	echo -e "Allocated core: $ALLOC_JOB"
-	echo ""
-	echo -e "LLVM: $LLVM_"
-	echo -e "LLVM_IAS: $LLVM_IAS_"
 	echo ""
 	echo -e "LTO: $LTO"
 	echo ""
