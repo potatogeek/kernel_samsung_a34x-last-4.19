@@ -5,6 +5,10 @@ SUBLEVEL = 325
 EXTRAVERSION =
 NAME = "People's Front"
 
+# Rissu's changes: Always build with LLVM+IAS
+export LLVM := 1
+export LLVM_IAS := 1
+
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
@@ -375,6 +379,7 @@ endif
 KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
 		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS) \
 		$(HOSTCFLAGS)
+# Rissu's changes: Silent deprecations warning
 KBUILD_HOSTCFLAGS   += -Wno-deprecated-declarations
 KBUILD_HOSTCXXFLAGS := -O2 $(HOST_LFS_CFLAGS) $(HOSTCXXFLAGS)
 KBUILD_HOSTLDFLAGS  := $(HOST_LFS_LDFLAGS) $(HOSTLDFLAGS)
@@ -447,8 +452,10 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common -fshort-wchar \
 		   -Werror-implicit-function-declaration \
-		   -Werror=return-type -Wno-format-security \
-		   -Wno-int-conversion -std=gnu89
+		   -Werror=return-type -Wno-format-security	\
+		   -std=gnu89
+# Rissu's changes: Don't error on clang 15+
+KBUILD_CFLAGS += -Wno-int-conversion
 KBUILD_CPPFLAGS := -D__KERNEL__
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=

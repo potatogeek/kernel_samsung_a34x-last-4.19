@@ -8,10 +8,10 @@
 # << If unset, you can override if u want
 [ -z $IS_CI ] && IS_CI=false
 [ -z $DO_CLEAN ] && DO_CLEAN=false
-[ -z $LTO ] && LTO=none
+[ -z $LTO ] && LTO=thin
 [ -z $DEFAULT_KSU_REPO ] && DEFAULT_KSU_REPO="https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh"
 [ -z $DEFAULT_AK3_REPO ] && DEFAULT_AK3_REPO="git clone https://github.com/rsuntk/AnyKernel3.git"
-[ -z $DEVICE ] && DEVICE="Unknown"
+[ -z $DEVICE ] && DEVICE="A346E"
 
 # special rissu's path. linked to his toolchains
 if [ -d /rsuntk ]; then
@@ -166,22 +166,6 @@ else
 fi
 
 IMAGE="$(pwd)/out/arch/arm64/boot/Image"
-
-if [ "$LLVM" = "1" ]; then
-	LLVM_="true"
-	DEFAULT_ARGS+=" LLVM=1"
-	export LLVM=1
-	if [ "$LLVM_IAS" = "1" ]; then
-		LLVM_IAS_="true"
-		DEFAULT_ARGS+=" LLVM_IAS=1"
-		export LLVM_IAS=1
-	fi
-else
-	LLVM_="false"
-	if [ "$LLVM_IAS" != "1" ]; then
-		LLVM_IAS_="false"
-	fi
-fi
 
 pr_sum() {
 	[ -z $KBUILD_BUILD_USER ] && KBUILD_BUILD_USER="`whoami`"
