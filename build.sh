@@ -95,21 +95,21 @@ usage() {
 # if first arg starts with "clean"
 if [[ "$1" = "clean" ]]; then
 	[ $# -gt 1 ] && pr_err "Excess argument, only need one argument."
-	pr_info "Cleaning dirs"
+ 	if [ -d $(pwd)/out ] || [ -d $(pwd)/.config ]; then
+  		pr_info "Cleaning dirs .."
+    	else
+     		pr_err "No need clean"
+ 	fi
+  
 	if [ -d $(pwd)/out ]; then
 		rm -rf out
 	elif [ -f $(pwd)/.config ]; then
-		make clean
-		make mrproper
-	else
-		pr_err "No need clean."
+		make clean && make mrproper
 	fi
 	pr_err "All clean."
 elif [[ "$1" = "dirty" ]]; then
-	if [ $# -gt 3 ]; then
-		pr_err "Excess argument, only need three argument."
-	fi	
-	pr_err "Starting dirty build"
+	[ $# -gt 3 ] && pr_err "Excess argument, only need three argument."
+	pr_info "Starting dirty build"
 	FIRST_JOB="$2"
 	JOB_COUNT="$3"
 	if [ "$FIRST_JOB" = "-j" ] || [ "$FIRST_JOB" = "--jobs" ]; then
@@ -122,6 +122,7 @@ elif [[ "$1" = "dirty" ]]; then
 		pr_invalid $2
 	fi
 	make -j`echo $ALLOC_JOB` -C $(pwd) O=$(pwd)/out `echo $DEFAULT_ARGS`
+ 	pr_err "Dirty build done. Clean build is recommended."
 elif [[ "$1" = "ak3" ]]; then
 	if [ $# -gt 1 ]; then
 		pr_err "Excess argument, only need one argument."
