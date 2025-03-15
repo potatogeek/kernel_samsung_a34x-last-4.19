@@ -6,8 +6,8 @@ EXTRAVERSION = +2
 NAME = "People's Front"
 
 # Rissu's changes: Always build with LLVM+IAS
-export LLVM := 1
-export LLVM_IAS := 1
+export LLVM=1
+export LLVM_IAS=1
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -376,7 +376,7 @@ else
 HOSTCC	= gcc
 HOSTCXX	= g++
 endif
-KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 \
+KBUILD_HOSTCFLAGS   := -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 \
 		-fomit-frame-pointer -std=gnu89 $(HOST_LFS_CFLAGS) \
 		$(HOSTCFLAGS)
 # Rissu's changes: Silent deprecations warning
