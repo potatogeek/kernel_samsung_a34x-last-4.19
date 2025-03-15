@@ -151,7 +151,6 @@ void pm_qos_remove_request(struct pm_qos_request *req);
 
 int pm_qos_request(int pm_qos_class);
 int pm_qos_request_for_cpu(int pm_qos_class, int cpu);
-int pm_qos_request_for_cpumask(int pm_qos_class, struct cpumask *mask);
 int pm_qos_add_notifier(int pm_qos_class, struct notifier_block *notifier);
 int pm_qos_remove_notifier(int pm_qos_class, struct notifier_block *notifier);
 int pm_qos_request_active(struct pm_qos_request *req);
