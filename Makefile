@@ -2,7 +2,7 @@
 VERSION = 4
 PATCHLEVEL = 19
 SUBLEVEL = 325
-EXTRAVERSION = +1
+EXTRAVERSION = +2
 NAME = "People's Front"
 
 # Rissu's changes: Always build with LLVM+IAS
