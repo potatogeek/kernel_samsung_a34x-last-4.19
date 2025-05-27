@@ -1,0 +1,1 @@
+#define UTS_RELEASE "4.19.325+2A34x-POTATO-MOD-KERNEL-by=xddeath69"

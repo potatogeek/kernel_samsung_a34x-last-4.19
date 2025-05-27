@@ -2606,6 +2606,29 @@ retry:
 		}
 		return mp;
 	}
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+	// current->susfs_last_fake_mnt_id -> to record last valid fake mnt_id to zygote pid
+	// q->mnt.susfs_mnt_id_backup -> original mnt_id
+	// q->mnt_id -> will be modified to the fake mnt_id
+
+	// Here We are only interested in processes of which original mnt namespace belongs to zygote 
+	// Also we just make use of existing 'q' mount pointer, no need to delcare extra mount pointer
+	if (is_zygote_pid) {
+		last_entry_mnt_id = list_first_entry(&new_ns->list, struct mount, mnt_list)->mnt_id;
+		list_for_each_entry(q, &new_ns->list, mnt_list) {
+			if (unlikely(q->mnt_id >= DEFAULT_SUS_MNT_ID)) {
+				continue;
+			}
+			q->mnt.susfs_mnt_id_backup = q->mnt_id;
+			q->mnt_id = last_entry_mnt_id++;
+		}
+	}
+	// Assign the 'last_entry_mnt_id' to 'current->susfs_last_fake_mnt_id' for later use.
+	// should be fine here assuming zygote is forking/unsharing app in one single thread.
+	// Or should we put a lock here?
+	current->susfs_last_fake_mnt_id = last_entry_mnt_id;
+#endif
+
 	namespace_unlock();
 	inode_unlock(path->dentry->d_inode);
 	path_put(path);
