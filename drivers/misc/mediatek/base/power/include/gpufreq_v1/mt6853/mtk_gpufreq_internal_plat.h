@@ -8,8 +8,8 @@
 #define ___MT_GPUFREQ_INTERNAL_PLAT_H___
 
 /**************************************************
- *  0:     all on when mtk probe init (freq/ Vgpu/ Vsram_gpu)
- *         disable DDK power on/off callback
+ * 0:     all on when mtk probe init (freq/ Vgpu/ Vsram_gpu)
+ * disable DDK power on/off callback
  **************************************************/
 #define MT_GPUFREQ_POWER_CTL_ENABLE	1
 
@@ -34,9 +34,9 @@
  * And hgih vgpu will have the same diff with vsram.
  *
  * if (vgpu <= FIXED_VSRAM_VOLT_THSRESHOLD) {
- *     vsram = FIXED_VSRAM_VOLT;
+ * vsram = FIXED_VSRAM_VOLT;
  * } else {
- *     vsram = vgpu + FIXED_VSRAM_VOLT_DIFF;
+ * vsram = vgpu + FIXED_VSRAM_VOLT_DIFF;
  * }
  */
 #define FIXED_VSRAM_VOLT                (75000)
@@ -61,7 +61,7 @@
 /**************************************************
  * Clock Setting
  **************************************************/
-#define POSDIV_4_MAX_FREQ               (950000)        /* KHz */
+#define POSDIV_4_MAX_FREQ               (1200000)       /* KHz */
 #define POSDIV_4_MIN_FREQ               (375000)        /* KHz */
 #define POSDIV_8_MAX_FREQ               (475000)        /* KHz */
 #define POSDIV_8_MIN_FREQ               (187500)        /* KHz */
@@ -77,9 +77,9 @@
 /**************************************************
  * Reference Power Setting
  **************************************************/
-#define GPU_ACT_REF_POWER               (1133)                /* mW  */
-#define GPU_ACT_REF_FREQ                (950000)              /* KHz */
-#define GPU_ACT_REF_VOLT                (80000)               /* mV x 100 */
+#define GPU_ACT_REF_POWER               (1133)                /* mW  */ /* TODO: This might need adjustment based on new Freq/Volt if used for power modeling */
+#define GPU_ACT_REF_FREQ                (1200000)             /* KHz */
+#define GPU_ACT_REF_VOLT                (101250)              /* mV x 100 */
 #define PTPOD_DISABLE_VOLT              (75000)
 
 /**************************************************
@@ -323,7 +323,7 @@ unsigned int g_ptpod_opp_idx_table_segment[] = {
  * GPU OPP table definition
  **************************************************/
 struct opp_table_info g_opp_table_segment_1[] = {
-	GPUOP(950000, 80000, 80000, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 101250, 101250, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(941000, 79375, 79375, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(932000, 78750, 78750, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(923000, 78125, 78125, POSDIV_POWER_4, 1875), /* 3 */
@@ -363,7 +363,7 @@ struct opp_table_info g_opp_table_segment_1[] = {
 };
 
 struct opp_table_info g_opp_table_segment_2[] = {
-	GPUOP(950000, 80000, 80000, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 101250, 101250, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(941000, 79375, 79375, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(932000, 78750, 78750, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(923000, 78125, 78125, POSDIV_POWER_4, 1875), /* 3 */
@@ -403,7 +403,7 @@ struct opp_table_info g_opp_table_segment_2[] = {
 };
 
 struct opp_table_info g_opp_table_segment_3[] = {
-	GPUOP(950000, 80000, 80000, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 101250, 101250, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(941000, 79375, 79375, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(932000, 78750, 78750, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(923000, 78125, 78125, POSDIV_POWER_4, 1875), /* 3 */
