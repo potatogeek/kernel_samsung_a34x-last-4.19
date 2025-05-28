@@ -103,7 +103,7 @@
  * Reference Power Setting
  **************************************************/
 #define GPU_ACT_REF_POWER               (1223)                /* mW  */
-#define GPU_ACT_REF_FREQ                (950000)              /* KHz */
+#define GPU_ACT_REF_FREQ                (1200000)              /* KHz */
 #define GPU_ACT_REF_VOLT                (78125)               /* mV x 100 */
 
 /**************************************************
@@ -376,7 +376,7 @@ unsigned int g_ptpod_opp_idx_table_segment[] = {
  * GPU OPP table definition
  **************************************************/
 struct opp_table_info g_opp_table_segment_1[] = {
-	GPUOP(950000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
@@ -417,7 +417,7 @@ struct opp_table_info g_opp_table_segment_1[] = {
 };
 
 struct opp_table_info g_opp_table_segment_2[] = {
-	GPUOP(950000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
@@ -458,7 +458,7 @@ struct opp_table_info g_opp_table_segment_2[] = {
 };
 
 struct opp_table_info g_opp_table_segment_3[] = {
-	GPUOP(950000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
+	GPUOP(1200000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
 	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
 	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
 	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
