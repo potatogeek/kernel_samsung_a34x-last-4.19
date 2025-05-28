@@ -1,16 +1,6 @@
 --- fs/proc/task_mmu.c
 +++ fs/proc/task_mmu.c
-@@ -20,6 +20,9 @@
- #include <linux/uaccess.h>
- #include <linux/pkeys.h>
- #include <linux/mm_inline.h>
-+#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT
-+#include <linux/susfs_def.h>
-+#endif
- 
- #include <asm/elf.h>
- #include <asm/tlb.h>
-@@ -365,8 +372,17 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
+@@ -368,8 +375,17 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma)
  
  	if (file) {
  		struct inode *inode = file_inode(vma->vm_file);

@@ -2076,54 +2076,13 @@ static inline bool may_mount(void)
 	return ns_capable(current->nsproxy->mnt_ns->user_ns, CAP_SYS_ADMIN);
 }
 
-#ifdef	CONFIG_MANDATORY_FILE_LOCKING
-static bool may_mandlock(void)
-{
-	pr_warn_once("======================================================\n"
-		     "WARNING: the mand mount option is being deprecated and\n"
-		     "         will be removed in v5.15!\n"
-		     "======================================================\n");
-	return capable(CAP_SYS_ADMIN);
-}
-#else
 static inline bool may_mandlock(void)
 {
-	pr_warn("VFS: \"mand\" mount option not supported");
+#ifndef	CONFIG_MANDATORY_FILE_LOCKING
 	return false;
-}
 #endif
-
-#ifdef CONFIG_KSU
-static int can_umount(const struct path *path, int flags)
-{
-	struct mount *mnt = real_mount(path->mnt);
-	if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
-		return -EINVAL;
-	if (!may_mount())
-		return -EPERM;
-	if (path->dentry != path->mnt->mnt_root)
-		return -EINVAL;
-	if (!check_mnt(mnt))
-		return -EINVAL;
-	if (mnt->mnt.mnt_flags & MNT_LOCKED) /* Check optimistically */
-		return -EINVAL;
-	if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
-		return -EPERM;
-	return 0;
+	return capable(CAP_SYS_ADMIN);
 }
-int path_umount(struct path *path, int flags)
-{
-	struct mount *mnt = real_mount(path->mnt);
-	int ret;
-	ret = can_umount(path, flags);
-	if (!ret)
-		ret = do_umount(mnt, flags);
-	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
-	dput(path->dentry);
-	mntput_no_expire(mnt);
-	return ret;
-}
-#endif
 
 static int can_umount(const struct path *path, int flags)
 {
@@ -2365,24 +2324,6 @@ void drop_collected_mounts(struct vfsmount *mnt)
 	namespace_unlock();
 }
 
-static bool has_locked_children(struct mount *mnt, struct dentry *dentry)
-{
-	struct mount *child;
-
-	list_for_each_entry(child, &mnt->mnt_mounts, mnt_child) {
-		if (!is_subdir(child->mnt_mountpoint, dentry))
-			continue;
-
-#ifdef CONFIG_KDP_NS
-		if (child->mnt->mnt_flags & MNT_LOCKED)
-#else
-		if (child->mnt.mnt_flags & MNT_LOCKED)
-#endif
-			return true;
-	}
-	return false;
-}
-
 /**
  * clone_private_mount - create a private clone of a path
  *
@@ -2397,19 +2338,10 @@ struct vfsmount *clone_private_mount(const struct path *path)
 	struct mount *old_mnt = real_mount(path->mnt);
 	struct mount *new_mnt;
 
-	down_read(&namespace_sem);
 	if (IS_MNT_UNBINDABLE(old_mnt))
-		goto invalid;
-
-	if (!check_mnt(old_mnt))
-		goto invalid;
-
-	if (has_locked_children(old_mnt, path->dentry))
-		goto invalid;
+		return ERR_PTR(-EINVAL);
 
 	new_mnt = clone_mnt(old_mnt, path->dentry, CL_PRIVATE);
-	up_read(&namespace_sem);
-
 	if (IS_ERR(new_mnt))
 		return ERR_CAST(new_mnt);
 
@@ -2418,10 +2350,6 @@ struct vfsmount *clone_private_mount(const struct path *path)
 #else
 	return &new_mnt->mnt;
 #endif
-
-invalid:
-	up_read(&namespace_sem);
-	return ERR_PTR(-EINVAL);
 }
 EXPORT_SYMBOL_GPL(clone_private_mount);
 
@@ -2665,29 +2593,6 @@ retry:
 		}
 		return mp;
 	}
-#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
-	// current->susfs_last_fake_mnt_id -> to record last valid fake mnt_id to zygote pid
-	// q->mnt.susfs_mnt_id_backup -> original mnt_id
-	// q->mnt_id -> will be modified to the fake mnt_id
-
-	// Here We are only interested in processes of which original mnt namespace belongs to zygote 
-	// Also we just make use of existing 'q' mount pointer, no need to delcare extra mount pointer
-	if (is_zygote_pid) {
-		last_entry_mnt_id = list_first_entry(&new_ns->list, struct mount, mnt_list)->mnt_id;
-		list_for_each_entry(q, &new_ns->list, mnt_list) {
-			if (unlikely(q->mnt_id >= DEFAULT_SUS_MNT_ID)) {
-				continue;
-			}
-			q->mnt.susfs_mnt_id_backup = q->mnt_id;
-			q->mnt_id = last_entry_mnt_id++;
-		}
-	}
-	// Assign the 'last_entry_mnt_id' to 'current->susfs_last_fake_mnt_id' for later use.
-	// should be fine here assuming zygote is forking/unsharing app in one single thread.
-	// Or should we put a lock here?
-	current->susfs_last_fake_mnt_id = last_entry_mnt_id;
-#endif
-
 	namespace_unlock();
 	inode_unlock(path->dentry->d_inode);
 	path_put(path);
@@ -2778,6 +2683,23 @@ static int do_change_type(struct path *path, int ms_flags)
  out_unlock:
 	namespace_unlock();
 	return err;
+}
+
+static bool has_locked_children(struct mount *mnt, struct dentry *dentry)
+{
+	struct mount *child;
+	list_for_each_entry(child, &mnt->mnt_mounts, mnt_child) {
+		if (!is_subdir(child->mnt_mountpoint, dentry))
+			continue;
+
+#ifdef CONFIG_KDP_NS
+		if (child->mnt->mnt_flags & MNT_LOCKED)
+#else
+		if (child->mnt.mnt_flags & MNT_LOCKED)
+#endif
+			return true;
+	}
+	return false;
 }
 
 /*
@@ -3172,12 +3094,9 @@ static int do_new_mount(struct path *path, const char *fstype, int sb_flags,
 		return -ENODEV;
 
 	mnt = vfs_kern_mount(type, sb_flags, name, data);
-	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE)) {
-		down_write(&mnt->mnt_sb->s_umount);
-		if (!mnt->mnt_sb->s_subtype)
-			mnt = fs_set_subtype(mnt, fstype);
-		up_write(&mnt->mnt_sb->s_umount);
-	}
+	if (!IS_ERR(mnt) && (type->fs_flags & FS_HAS_SUBTYPE) &&
+	    !mnt->mnt_sb->s_subtype)
+		mnt = fs_set_subtype(mnt, fstype);
 
 	put_filesystem(type);
 	if (IS_ERR(mnt))

@@ -32,12 +32,7 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
  * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
  * used only internally to the kernel.
  */
-#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
 
-static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
-{
-	return fsn_mark->mask & INOTIFY_USER_MASK;
-}
 
 extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
 					   struct fsnotify_group *group);
