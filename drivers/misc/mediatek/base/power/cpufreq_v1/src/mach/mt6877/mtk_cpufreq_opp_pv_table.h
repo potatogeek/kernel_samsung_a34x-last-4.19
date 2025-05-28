@@ -12,7 +12,7 @@
 static unsigned int FY_6833Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	/* Freq, Vproc, post_div, clk_div */
 	/* LL */
-	{ 2000, 160, 1, 1 },
+	{ 2100, 160, 1, 1 },
 	{ 1903, 155, 1, 1 },
 	{ 1800, 148, 1, 1 },
 	{ 1703, 143, 1, 1 },
@@ -30,11 +30,11 @@ static unsigned int FY_6833Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 500, 104, 4, 1 },
 
 	/* L */
-	{ 2600, 168, 1, 1 },
+	{ 2700, 168, 1, 1 },
 	{ 2400, 160, 1, 1 },
 	{ 2275, 152, 1, 1 },
 	{ 2150, 144, 1, 1 },
-	{ 2000, 142, 1, 1 },
+	{ 2100, 142, 1, 1 },
 	{ 1900, 140, 1, 1 },
 	{ 1800, 139, 1, 1 },
 	{ 1660, 136, 1, 1 },
@@ -69,7 +69,7 @@ static unsigned int FY_6833Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 static unsigned int MT6833_B25GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	/* Freq, Vproc, post_div, clk_div */
 	/* LL */
-	{ 2000, 160, 1, 1 },
+	{ 2100, 160, 1, 1 },
 	{ 1903, 155, 1, 1 },
 	{ 1800, 148, 1, 1 },
 	{ 1703, 143, 1, 1 },
@@ -91,7 +91,7 @@ static unsigned int MT6833_B25GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 2400, 160, 1, 1 },
 	{ 2275, 152, 1, 1 },
 	{ 2150, 144, 1, 1 },
-	{ 2000, 142, 1, 1 },
+	{ 2100, 142, 1, 1 },
 	{ 1900, 140, 1, 1 },
 	{ 1800, 139, 1, 1 },
 	{ 1660, 136, 1, 1 },
@@ -126,7 +126,7 @@ static unsigned int MT6833_B25GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 static unsigned int MT6833_B24GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	/* Freq, Vproc, post_div, clk_div */
 	/* LL */
-	{ 2000, 160, 1, 1 },
+	{ 2100, 160, 1, 1 },
 	{ 1903, 155, 1, 1 },
 	{ 1800, 148, 1, 1 },
 	{ 1703, 143, 1, 1 },
@@ -148,7 +148,7 @@ static unsigned int MT6833_B24GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 2320, 161, 1, 1 },
 	{ 2240, 153, 1, 1 },
 	{ 2150, 144, 1, 1 },
-	{ 2000, 142, 1, 1 },
+	{ 2100, 142, 1, 1 },
 	{ 1900, 140, 1, 1 },
 	{ 1800, 139, 1, 1 },
 	{ 1660, 136, 1, 1 },
