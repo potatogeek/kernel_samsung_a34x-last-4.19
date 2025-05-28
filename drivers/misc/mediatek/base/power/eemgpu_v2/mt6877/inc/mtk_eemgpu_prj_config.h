@@ -51,7 +51,7 @@
 //#define EARLY_PORTING_GPU
 #define NR_FREQ 16
 #define NR_FREQ_GPU 16
-#define GPU_FREQ_BASE 950000
+#define GPU_FREQ_BASE 1200000
 #define GPU_M_FREQ_BASE 670000
 
 /*
