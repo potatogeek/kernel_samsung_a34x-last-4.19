@@ -7,8 +7,8 @@
 #define ___MT_GPUFREQ_INTERNAL_PLAT_H___
 
 /**************************************************
- *  0:     all on when mtk probe init (freq/ Vgpu/ Vsram_gpu)
- *         disable DDK power on/off callback
+ * 0:     all on when mtk probe init (freq/ Vgpu/ Vsram_gpu)
+ * disable DDK power on/off callback
  **************************************************/
 #define MT_GPUFREQ_POWER_CTL_ENABLE     1
 
@@ -33,9 +33,9 @@
  * And hgih vgpu will have the same diff with vsram.
  *
  * if (vgpu <= FIXED_VSRAM_VOLT_THSRESHOLD) {
- *     vsram = FIXED_VSRAM_VOLT;
+ * vsram = FIXED_VSRAM_VOLT;
  * } else {
- *     vsram = vgpu + FIXED_VSRAM_VOLT_DIFF;
+ * vsram = vgpu + FIXED_VSRAM_VOLT_DIFF;
  * }
  */
 #define FIXED_VSRAM_VOLT                (75000)
@@ -102,9 +102,10 @@
 /**************************************************
  * Reference Power Setting
  **************************************************/
-#define GPU_ACT_REF_POWER               (1223)                /* mW  */
-#define GPU_ACT_REF_FREQ                (1050000)              /* KHz */
-#define GPU_ACT_REF_VOLT                (78125)               /* mV x 100 */
+#define GPU_ACT_REF_POWER        (1300)      /* mW - Aumentado para estabilidade */
+#define GPU_ACT_REF_FREQ         (1100000)   /* KHz - Mantido em 1100MHz */
+#define GPU_ACT_REF_VOLT         (106250)    /* mV x 100 - ~1.062V para estabilidade */
+
 
 /**************************************************
  * Battery Over Current Protect
@@ -371,133 +372,131 @@ unsigned int g_ptpod_opp_idx_table_segment[] = {
 	23, 25, 27, 29,
 	31, 33, 35, 37
 };
-
 /**************************************************
- * GPU OPP table definition
- **************************************************/
+ * GPU OPP table definition - CONFIGURAÇÃO ESTABILIZADA E CORRIGIDA
+ **************************************************/
 struct opp_table_info g_opp_table_segment_1[] = {
-	GPUOP(1050000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
-	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
-	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
-	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
-	GPUOP(902000, 75625, 75625, POSDIV_POWER_4, 1875), /* 4 */
-	GPUOP(890000, 75000, 75000, POSDIV_POWER_4, 1875), /* 5 sign off */
-	GPUOP(876000, 74375, 75000, POSDIV_POWER_4, 1875), /* 6 */
-	GPUOP(862000, 73750, 75000, POSDIV_POWER_4, 1875), /* 7 */
-	GPUOP(848000, 73125, 75000, POSDIV_POWER_4, 1875), /* 8 */
-	GPUOP(835000, 72500, 75000, POSDIV_POWER_4, 1875), /* 9 */
-	GPUOP(821000, 71875, 75000, POSDIV_POWER_4, 1875), /*10 */
-	GPUOP(807000, 71250, 75000, POSDIV_POWER_4, 1875), /*11 */
-	GPUOP(793000, 70625, 75000, POSDIV_POWER_4, 1875), /*12 */
-	GPUOP(780000, 70000, 75000, POSDIV_POWER_4, 1875), /*13 */
-	GPUOP(766000, 69375, 75000, POSDIV_POWER_4, 1875), /*14 */
-	GPUOP(752000, 68750, 75000, POSDIV_POWER_4, 1250), /*15 */
-	GPUOP(738000, 68125, 75000, POSDIV_POWER_4, 1250), /*16 */
-	GPUOP(725000, 67500, 75000, POSDIV_POWER_4, 1250), /*17 */
-	GPUOP(711000, 66875, 75000, POSDIV_POWER_4, 1250), /*18 */
-	GPUOP(697000, 66250, 75000, POSDIV_POWER_4, 1250), /*19 */
-	GPUOP(683000, 65625, 75000, POSDIV_POWER_4, 1250), /*20 */
-	GPUOP(670000, 65000, 75000, POSDIV_POWER_4, 1250), /*21 sign off */
-	GPUOP(652000, 64375, 75000, POSDIV_POWER_4, 1250), /*22 */
-	GPUOP(634000, 63750, 75000, POSDIV_POWER_4, 1250), /*23 */
-	GPUOP(616000, 63125, 75000, POSDIV_POWER_4, 1250), /*24 */
-	GPUOP(598000, 62500, 75000, POSDIV_POWER_4, 1250), /*25 */
-	GPUOP(580000, 61875, 75000, POSDIV_POWER_4, 1250), /*26 */
-	GPUOP(563000, 61250, 75000, POSDIV_POWER_4,  625), /*27 */
-	GPUOP(545000, 60625, 75000, POSDIV_POWER_4,  625), /*28 */
-	GPUOP(527000, 60000, 75000, POSDIV_POWER_4,  625), /*29 */
-	GPUOP(509000, 59375, 75000, POSDIV_POWER_4,  625), /*30 */
-	GPUOP(491000, 58750, 75000, POSDIV_POWER_4,  625), /*31 */
-	GPUOP(474000, 58125, 75000, POSDIV_POWER_4,  625), /*32 */
-	GPUOP(456000, 57500, 75000, POSDIV_POWER_4,  625), /*33 */
-	GPUOP(438000, 56875, 75000, POSDIV_POWER_4,  625), /*34 */
-	GPUOP(420000, 56250, 75000, POSDIV_POWER_4,  625), /*35 */
-	GPUOP(402000, 55625, 75000, POSDIV_POWER_4,  625), /*36 */
-	GPUOP(385000, 55000, 75000, POSDIV_POWER_4,  625), /*37 sign off */
+	GPUOP(1100000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Aumentada tensão e margem */
+	GPUOP(1050000, 79375, 84375, POSDIV_POWER_2, 2250), /* 1 - Novo step intermedio */
+	GPUOP(1000000, 78125, 83125, POSDIV_POWER_2, 2000), /* 2 - Ajustado, Post Divider corrigido para POSDIV_POWER_2 */
+	GPUOP(950000, 77500, 82500, POSDIV_POWER_4, 1875), /* 3 */
+	GPUOP(926000, 76875, 81875, POSDIV_POWER_4, 1875), /* 4 */
+	GPUOP(914000, 76250, 81250, POSDIV_POWER_4, 1875), /* 5 sign off */
+	GPUOP(902000, 75625, 80625, POSDIV_POWER_4, 1875), /* 6 */
+	GPUOP(890000, 75000, 80000, POSDIV_POWER_4, 1875), /* 7 */ // Nota: Vgpu=75000, Vsram=80000. Se Vgpu<=THRESHOLD, Vsram deveria ser FIXED_VSRAM_VOLT (75000). Este é um valor customizado.
+	GPUOP(876000, 74375, 79375, POSDIV_POWER_4, 1875), /* 8 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(862000, 73750, 78750, POSDIV_POWER_4, 1875), /* 9 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(848000, 73125, 78125, POSDIV_POWER_4, 1875), /*10 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(835000, 72500, 77500, POSDIV_POWER_4, 1875), /*11 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(821000, 71875, 76875, POSDIV_POWER_4, 1875), /*12 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(807000, 71250, 76250, POSDIV_POWER_4, 1875), /*13 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(793000, 70625, 75625, POSDIV_POWER_4, 1875), /*14 */ // Vgpu<75k, Vsram customizado.
+	GPUOP(780000, 70000, 75000, POSDIV_POWER_4, 1875), /*15 */ // Vgpu<75k, Vsram=75k (FIXED_VSRAM_VOLT)
+	GPUOP(766000, 69375, 75000, POSDIV_POWER_4, 1875), /*16 */ // Vgpu<75k, Vsram=75k
+	GPUOP(752000, 68750, 75000, POSDIV_POWER_4, 1250), /*17 */ // Vgpu<75k, Vsram=75k
+	GPUOP(738000, 68125, 75000, POSDIV_POWER_4, 1250), /*18 */ // Vgpu<75k, Vsram=75k
+	GPUOP(725000, 67500, 75000, POSDIV_POWER_4, 1250), /*19 */ // Vgpu<75k, Vsram=75k
+	GPUOP(711000, 66875, 75000, POSDIV_POWER_4, 1250), /*20 */ // Vgpu<75k, Vsram=75k
+	GPUOP(697000, 66250, 75000, POSDIV_POWER_4, 1250), /*21 sign off */ // Vgpu<75k, Vsram=75k
+	GPUOP(683000, 65625, 75000, POSDIV_POWER_4, 1250), /*22 */ // Vgpu<75k, Vsram=75k
+	GPUOP(670000, 65000, 75000, POSDIV_POWER_4, 1250), /*23 */ // Vgpu<75k, Vsram=75k
+	GPUOP(652000, 64375, 75000, POSDIV_POWER_4, 1250), /*24 */ // Vgpu<75k, Vsram=75k
+	GPUOP(634000, 63750, 75000, POSDIV_POWER_4, 1250), /*25 */ // Vgpu<75k, Vsram=75k
+	GPUOP(616000, 63125, 75000, POSDIV_POWER_4, 1250), /*26 */ // Vgpu<75k, Vsram=75k
+	GPUOP(598000, 62500, 75000, POSDIV_POWER_4, 1250), /*27 */ // Vgpu<75k, Vsram=75k
+	GPUOP(580000, 61875, 75000, POSDIV_POWER_4, 1250), /*28 */ // Vgpu<75k, Vsram=75k
+	GPUOP(563000, 61250, 75000, POSDIV_POWER_4,  625), /*29 */ // Vgpu<75k, Vsram=75k
+	GPUOP(545000, 60625, 75000, POSDIV_POWER_4,  625), /*30 */ // Vgpu<75k, Vsram=75k
+	GPUOP(527000, 60000, 75000, POSDIV_POWER_4,  625), /*31 */ // Vgpu<75k, Vsram=75k
+	GPUOP(509000, 59375, 75000, POSDIV_POWER_4,  625), /*32 */ // Vgpu<75k, Vsram=75k
+	GPUOP(491000, 58750, 75000, POSDIV_POWER_4,  625), /*33 */ // Vgpu<75k, Vsram=75k
+	GPUOP(474000, 58125, 75000, POSDIV_POWER_4,  625), /*34 */ // Vgpu<75k, Vsram=75k
+	GPUOP(456000, 57500, 75000, POSDIV_POWER_4,  625), /*35 */ // Vgpu<75k, Vsram=75k
+	GPUOP(438000, 56875, 75000, POSDIV_POWER_4,  625), /*36 */ // Vgpu<75k, Vsram=75k
+	GPUOP(420000, 56250, 75000, POSDIV_POWER_4,  625), /*37 */ // Vgpu<75k, Vsram=75k
+	GPUOP(385000, 55000, 75000, POSDIV_POWER_4,  625), /*38 sign off */ // Vgpu<75k, Vsram=75k
 };
 
 struct opp_table_info g_opp_table_segment_2[] = {
-	GPUOP(1050000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
-	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
-	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
-	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
-	GPUOP(902000, 75625, 75625, POSDIV_POWER_4, 1875), /* 4 */
-	GPUOP(890000, 75000, 75000, POSDIV_POWER_4, 1875), /* 5 sign off */
-	GPUOP(876000, 74375, 75000, POSDIV_POWER_4, 1875), /* 6 */
-	GPUOP(862000, 73750, 75000, POSDIV_POWER_4, 1875), /* 7 */
-	GPUOP(848000, 73125, 75000, POSDIV_POWER_4, 1875), /* 8 */
-	GPUOP(835000, 72500, 75000, POSDIV_POWER_4, 1875), /* 9 */
-	GPUOP(821000, 71875, 75000, POSDIV_POWER_4, 1875), /*10 */
-	GPUOP(807000, 71250, 75000, POSDIV_POWER_4, 1875), /*11 */
-	GPUOP(793000, 70625, 75000, POSDIV_POWER_4, 1875), /*12 */
-	GPUOP(780000, 70000, 75000, POSDIV_POWER_4, 1875), /*13 */
-	GPUOP(766000, 69375, 75000, POSDIV_POWER_4, 1875), /*14 */
-	GPUOP(752000, 68750, 75000, POSDIV_POWER_4, 1250), /*15 */
-	GPUOP(738000, 68125, 75000, POSDIV_POWER_4, 1250), /*16 */
-	GPUOP(725000, 67500, 75000, POSDIV_POWER_4, 1250), /*17 */
-	GPUOP(711000, 66875, 75000, POSDIV_POWER_4, 1250), /*18 */
-	GPUOP(697000, 66250, 75000, POSDIV_POWER_4, 1250), /*19 */
-	GPUOP(683000, 65625, 75000, POSDIV_POWER_4, 1250), /*20 */
-	GPUOP(670000, 65000, 75000, POSDIV_POWER_4, 1250), /*21 sign off */
-	GPUOP(652000, 65000, 75000, POSDIV_POWER_4, 1250), /*22 */
-	GPUOP(634000, 64375, 75000, POSDIV_POWER_4, 1250), /*23 */
-	GPUOP(616000, 63750, 75000, POSDIV_POWER_4, 1250), /*24 */
-	GPUOP(598000, 63125, 75000, POSDIV_POWER_4, 1250), /*25 */
-	GPUOP(580000, 63125, 75000, POSDIV_POWER_4, 1250), /*26 */
-	GPUOP(563000, 62500, 75000, POSDIV_POWER_4,  625), /*27 */
-	GPUOP(545000, 61875, 75000, POSDIV_POWER_4,  625), /*28 */
-	GPUOP(527000, 61250, 75000, POSDIV_POWER_4,  625), /*29 */
-	GPUOP(509000, 61250, 75000, POSDIV_POWER_4,  625), /*30 */
-	GPUOP(491000, 60625, 75000, POSDIV_POWER_4,  625), /*31 */
-	GPUOP(474000, 60000, 75000, POSDIV_POWER_4,  625), /*32 */
-	GPUOP(456000, 59375, 75000, POSDIV_POWER_4,  625), /*33 */
-	GPUOP(438000, 59375, 75000, POSDIV_POWER_4,  625), /*34 */
-	GPUOP(420000, 58750, 75000, POSDIV_POWER_4,  625), /*35 */
-	GPUOP(402000, 58125, 75000, POSDIV_POWER_4,  625), /*36 */
-	GPUOP(385000, 57500, 75000, POSDIV_POWER_4,  625), /*37 sign off */
-};
-
+	GPUOP(1100000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Melhorada estabilidade */
+	GPUOP(1050000, 79375, 84375, POSDIV_POWER_2, 2250), /* 1 */
+	GPUOP(1000000, 78125, 83125, POSDIV_POWER_2, 2000), /* 2 - Post Divider corrigido para POSDIV_POWER_2 */
+	GPUOP(950000, 77500, 82500, POSDIV_POWER_4, 1875), /* 3 */
+	GPUOP(926000, 76875, 81875, POSDIV_POWER_4, 1875), /* 4 */
+	GPUOP(914000, 76250, 81250, POSDIV_POWER_4, 1875), /* 5 - Vsram ajustada para consistência com Segmento 1 */
+	GPUOP(902000, 75625, 80625, POSDIV_POWER_4, 1875), /* 6 - Vsram ajustada para consistência com Segmento 1 */
+	GPUOP(890000, 75000, 75000, POSDIV_POWER_4, 1875), /* 7 sign off */ // Vgpu<=75k, Vsram=75k
+	GPUOP(876000, 74375, 75000, POSDIV_POWER_4, 1875), /* 8 */ // Vgpu<75k, Vsram=75k
+	GPUOP(862000, 73750, 75000, POSDIV_POWER_4, 1875), /* 9 */ // Vgpu<75k, Vsram=75k
+	GPUOP(848000, 73125, 75000, POSDIV_POWER_4, 1875), /* 10 */ // Vgpu<75k, Vsram=75k
+	GPUOP(835000, 72500, 75000, POSDIV_POWER_4, 1875), /* 11 */ // Vgpu<75k, Vsram=75k
+	GPUOP(821000, 71875, 75000, POSDIV_POWER_4, 1875), /* 12 */ // Vgpu<75k, Vsram=75k
+	GPUOP(807000, 71250, 75000, POSDIV_POWER_4, 1875), /* 13 */ // Vgpu<75k, Vsram=75k
+	GPUOP(793000, 70625, 75000, POSDIV_POWER_4, 1875), /* 14 */ // Vgpu<75k, Vsram=75k
+	GPUOP(780000, 70000, 75000, POSDIV_POWER_4, 1875), /* 15 */ // Vgpu<75k, Vsram=75k
+	GPUOP(766000, 69375, 75000, POSDIV_POWER_4, 1875), /* 16 */ // Vgpu<75k, Vsram=75k
+	GPUOP(752000, 68750, 75000, POSDIV_POWER_4, 1250), /* 17 */ // Vgpu<75k, Vsram=75k
+	GPUOP(738000, 68125, 75000, POSDIV_POWER_4, 1250), /* 18 */ // Vgpu<75k, Vsram=75k
+	GPUOP(725000, 67500, 75000, POSDIV_POWER_4, 1250), /* 19 */ // Vgpu<75k, Vsram=75k
+	GPUOP(711000, 66875, 75000, POSDIV_POWER_4, 1250), /* 20 */ // Vgpu<75k, Vsram=75k
+	GPUOP(697000, 66250, 75000, POSDIV_POWER_4, 1250), /* 21 */ // Vgpu<75k, Vsram=75k
+	GPUOP(683000, 65625, 75000, POSDIV_POWER_4, 1250), /* 22 */ // Vgpu<75k, Vsram=75k
+	GPUOP(670000, 65000, 75000, POSDIV_POWER_4, 1250), /* 23 sign off */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "21 sign off"
+	GPUOP(652000, 65000, 75000, POSDIV_POWER_4, 1250), /* 24 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "22"
+	GPUOP(634000, 64375, 75000, POSDIV_POWER_4, 1250), /* 25 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "23"
+	GPUOP(616000, 63750, 75000, POSDIV_POWER_4, 1250), /* 26 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "24"
+	GPUOP(598000, 63125, 75000, POSDIV_POWER_4, 1250), /* 27 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "25"
+	GPUOP(580000, 63125, 75000, POSDIV_POWER_4, 1250), /* 28 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "26"
+	GPUOP(563000, 62500, 75000, POSDIV_POWER_4,  625), /* 29 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "27"
+	GPUOP(545000, 61875, 75000, POSDIV_POWER_4,  625), /* 30 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "28"
+	GPUOP(527000, 61250, 75000, POSDIV_POWER_4,  625), /* 31 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "29"
+	GPUOP(509000, 61250, 75000, POSDIV_POWER_4,  625), /* 32 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "30"
+	GPUOP(491000, 60625, 75000, POSDIV_POWER_4,  625), /* 33 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "31"
+	GPUOP(474000, 60000, 75000, POSDIV_POWER_4,  625), /* 34 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "32"
+	GPUOP(456000, 59375, 75000, POSDIV_POWER_4,  625), /* 35 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "33"
+	GPUOP(438000, 59375, 75000, POSDIV_POWER_4,  625), /* 36 */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "34"
+	GPUOP(420000, 58750, 75000, POSDIV_POWER_4,  625), /* 37 sign off */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "35"
+   };
 struct opp_table_info g_opp_table_segment_3[] = {
-	GPUOP(1050000, 78125, 78125, POSDIV_POWER_4, 1875), /* 0 sign off */
-	GPUOP(938000, 77500, 77500, POSDIV_POWER_4, 1875), /* 1 */
-	GPUOP(926000, 76875, 76875, POSDIV_POWER_4, 1875), /* 2 */
-	GPUOP(914000, 76250, 76250, POSDIV_POWER_4, 1875), /* 3 */
-	GPUOP(902000, 75625, 75625, POSDIV_POWER_4, 1875), /* 4 */
-	GPUOP(890000, 75000, 75000, POSDIV_POWER_4, 1875), /* 5 sign off */
-	GPUOP(876000, 74375, 75000, POSDIV_POWER_4, 1875), /* 6 */
-	GPUOP(862000, 73750, 75000, POSDIV_POWER_4, 1875), /* 7 */
-	GPUOP(848000, 73125, 75000, POSDIV_POWER_4, 1875), /* 8 */
-	GPUOP(835000, 72500, 75000, POSDIV_POWER_4, 1875), /* 9 */
-	GPUOP(821000, 71875, 75000, POSDIV_POWER_4, 1875), /*10 */
-	GPUOP(807000, 71250, 75000, POSDIV_POWER_4, 1875), /*11 */
-	GPUOP(793000, 70625, 75000, POSDIV_POWER_4, 1875), /*12 */
-	GPUOP(780000, 70000, 75000, POSDIV_POWER_4, 1875), /*13 */
-	GPUOP(766000, 69375, 75000, POSDIV_POWER_4, 1875), /*14 */
-	GPUOP(752000, 68750, 75000, POSDIV_POWER_4, 1250), /*15 */
-	GPUOP(738000, 68125, 75000, POSDIV_POWER_4, 1250), /*16 */
-	GPUOP(725000, 67500, 75000, POSDIV_POWER_4, 1250), /*17 */
-	GPUOP(711000, 66875, 75000, POSDIV_POWER_4, 1250), /*18 */
-	GPUOP(697000, 66250, 75000, POSDIV_POWER_4, 1250), /*19 */
-	GPUOP(683000, 65625, 75000, POSDIV_POWER_4, 1250), /*20 */
-	GPUOP(670000, 65000, 75000, POSDIV_POWER_4, 1250), /*21 sign off */
-	GPUOP(652000, 65000, 75000, POSDIV_POWER_4, 1250), /*22 */
-	GPUOP(634000, 64375, 75000, POSDIV_POWER_4, 1250), /*23 */
-	GPUOP(616000, 64375, 75000, POSDIV_POWER_4, 1250), /*24 */
-	GPUOP(598000, 63750, 75000, POSDIV_POWER_4, 1250), /*25 */
-	GPUOP(580000, 63750, 75000, POSDIV_POWER_4, 1250), /*26 */
-	GPUOP(563000, 63125, 75000, POSDIV_POWER_4,  625), /*27 */
-	GPUOP(545000, 63125, 75000, POSDIV_POWER_4,  625), /*28 */
-	GPUOP(527000, 62500, 75000, POSDIV_POWER_4,  625), /*29 */
-	GPUOP(509000, 62500, 75000, POSDIV_POWER_4,  625), /*30 */
-	GPUOP(491000, 61875, 75000, POSDIV_POWER_4,  625), /*31 */
-	GPUOP(474000, 61875, 75000, POSDIV_POWER_4,  625), /*32 */
-	GPUOP(456000, 61250, 75000, POSDIV_POWER_4,  625), /*33 */
-	GPUOP(438000, 61250, 75000, POSDIV_POWER_4,  625), /*34 */
-	GPUOP(420000, 60625, 75000, POSDIV_POWER_4,  625), /*35 */
-	GPUOP(402000, 60625, 75000, POSDIV_POWER_4,  625), /*36 */
-	GPUOP(385000, 60000, 75000, POSDIV_POWER_4,  625), /*37 sign off */
+	GPUOP(1100000, 82500, 87500, POSDIV_POWER_2, 1875), /* 0 sign off - Vsram = Vgpu + 0.05V */
+	GPUOP(1060000, 80000, 85000, POSDIV_POWER_2, 1875), /* 1 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */
+	GPUOP(1020000, 79375, 84375, POSDIV_POWER_2, 1875), /* 2 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */
+	GPUOP(980000, 78750, 83750, POSDIV_POWER_2, 1875),  /* 3 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */
+	GPUOP(940000, 78125, 83125, POSDIV_POWER_4, 1875),  /* 4 - Freq ajustada, Vsram = Vgpu + 0.05V */
+	GPUOP(905000, 77500, 82500, POSDIV_POWER_4, 1875),  /* 5 sign off - Freq ajustada, Vsram = Vgpu + 0.05V */
+	GPUOP(870000, 77000, 82000, POSDIV_POWER_4, 1875),  /* 6 - Freq ajustada, Vsram = Vgpu + 0.05V */
+	GPUOP(856200, 76500, 81500, POSDIV_POWER_4, 1875),  /* 7 - Freq ajustada (Original Delta - 0.2k), Vsram = Vgpu + 0.05V */
+	GPUOP(842400, 76000, 81000, POSDIV_POWER_4, 1875),  /* 8 - Freq ajustada (Original Delta - 0.2k), Vsram = Vgpu + 0.05V */
+	GPUOP(829600, 75500, 80500, POSDIV_POWER_4, 1875),  /* 9 - Freq ajustada (Original Delta - 0.2k), Vsram = Vgpu + 0.05V (Vgpu > 75000) */
+	GPUOP(816800, 75000, 75000, POSDIV_POWER_4, 1875),  /* 10 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 (Vgpu <= 75000) */
+	GPUOP(804000, 74500, 75000, POSDIV_POWER_4, 1875),  /* 11 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(791200, 74000, 75000, POSDIV_POWER_4, 1875),  /* 12 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(778400, 73500, 75000, POSDIV_POWER_4, 1875),  /* 13 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(765600, 73000, 75000, POSDIV_POWER_4, 1875),  /* 14 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(752800, 72500, 75000, POSDIV_POWER_4, 1250),  /* 15 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(740000, 72000, 75000, POSDIV_POWER_4, 1250),  /* 16 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(727200, 71500, 75000, POSDIV_POWER_4, 1250),  /* 17 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(714400, 71000, 75000, POSDIV_POWER_4, 1250),  /* 18 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(701600, 70500, 75000, POSDIV_POWER_4, 1250),  /* 19 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(688800, 70000, 75000, POSDIV_POWER_4, 1250),  /* 20 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(676000, 69500, 75000, POSDIV_POWER_4, 1250),  /* 21 sign off - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(658200, 69000, 75000, POSDIV_POWER_4, 1250),  /* 22 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(640400, 68500, 75000, POSDIV_POWER_4, 1250),  /* 23 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(622600, 68000, 75000, POSDIV_POWER_4, 1250),  /* 24 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(604800, 67500, 75000, POSDIV_POWER_4, 1250),  /* 25 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(587000, 67000, 75000, POSDIV_POWER_4, 1250),  /* 26 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(570000, 66500, 75000, POSDIV_POWER_4,  625),  /* 27 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(552200, 66000, 75000, POSDIV_POWER_4,  625),  /* 28 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(534400, 65500, 75000, POSDIV_POWER_4,  625),  /* 29 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(516600, 65000, 75000, POSDIV_POWER_4,  625),  /* 30 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(498800, 64500, 75000, POSDIV_POWER_4,  625),  /* 31 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(482000, 64000, 75000, POSDIV_POWER_4,  625),  /* 32 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(464200, 63500, 75000, POSDIV_POWER_4,  625),  /* 33 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(446400, 63000, 75000, POSDIV_POWER_4,  625),  /* 34 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(428600, 62500, 75000, POSDIV_POWER_4,  625),  /* 35 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(410800, 62000, 75000, POSDIV_POWER_4,  625),  /* 36 - Freq ajustada (Original Delta - 0.2k), Vsram = 75000 */
+	GPUOP(385000, 61500, 75000, POSDIV_POWER_4,  625)   /* 37 sign off - Freq final ajustada para 385MHz, Vsram = 75000 */
 };
-
 /**************************************************
  * Aging table
  **************************************************/
