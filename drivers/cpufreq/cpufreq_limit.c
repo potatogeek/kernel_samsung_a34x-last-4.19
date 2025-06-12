@@ -111,7 +111,7 @@ static struct cpufreq_limit_parameter param = {
 #ifdef CONFIG_CPU_FREQ_LTL_LIMIT
 static struct cpufreq_ltl_limit ltl_limit = {
 	.ltl_limit_map = {
-	{2000000, 2000000},
+	{2300000, 2300000},
 	{1900000, 1903000},
 	{1660000, 1800000},
 	{1540000, 1703000},
@@ -124,7 +124,7 @@ static struct cpufreq_ltl_limit ltl_limit = {
 static struct cpufreq_limit_parameter param = {
 	.ltl_cpu_start			= 0,
 	.big_cpu_start			= 6,
-	.ltl_max_freq			= 2000000,
+	.ltl_max_freq			= 2300000,  
 	.ltl_min_lock_freq		= 1150000,
 	.big_max_lock_freq		= 910000,
 	.ltl_divider			= 4,

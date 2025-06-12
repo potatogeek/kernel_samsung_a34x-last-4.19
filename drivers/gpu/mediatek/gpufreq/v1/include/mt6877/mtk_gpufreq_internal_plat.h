@@ -102,9 +102,9 @@
 /**************************************************
  * Reference Power Setting
  **************************************************/
-#define GPU_ACT_REF_POWER        (1300)      /* mW - Aumentado para estabilidade */
-#define GPU_ACT_REF_FREQ         (1100000)   /* KHz - Mantido em 1100MHz */
-#define GPU_ACT_REF_VOLT         (106250)    /* mV x 100 - ~1.062V para estabilidade */
+#define GPU_ACT_REF_POWER        (1450)      /* mW - Aumentado para estabilidade */
+#define GPU_ACT_REF_FREQ         (1200000)   /* KHz - Mantido em 1100MHz */
+#define GPU_ACT_REF_VOLT         (108550)    /* mV x 100 - ~1.062V para estabilidade */
 
 
 /**************************************************
@@ -376,7 +376,7 @@ unsigned int g_ptpod_opp_idx_table_segment[] = {
  * GPU OPP table definition - CONFIGURAÇÃO ESTABILIZADA E CORRIGIDA
  **************************************************/
 struct opp_table_info g_opp_table_segment_1[] = {
-	GPUOP(1100000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Aumentada tensão e margem */
+	GPUOP(1200000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Aumentada tensão e margem */
 	GPUOP(1050000, 79375, 84375, POSDIV_POWER_2, 2250), /* 1 - Novo step intermedio */
 	GPUOP(1000000, 78125, 83125, POSDIV_POWER_2, 2000), /* 2 - Ajustado, Post Divider corrigido para POSDIV_POWER_2 */
 	GPUOP(950000, 77500, 82500, POSDIV_POWER_4, 1875), /* 3 */
@@ -418,7 +418,7 @@ struct opp_table_info g_opp_table_segment_1[] = {
 };
 
 struct opp_table_info g_opp_table_segment_2[] = {
-	GPUOP(1100000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Melhorada estabilidade */
+	GPUOP(1200000, 80625, 85625, POSDIV_POWER_2, 2500), /* 0 - Melhorada estabilidade */
 	GPUOP(1050000, 79375, 84375, POSDIV_POWER_2, 2250), /* 1 */
 	GPUOP(1000000, 78125, 83125, POSDIV_POWER_2, 2000), /* 2 - Post Divider corrigido para POSDIV_POWER_2 */
 	GPUOP(950000, 77500, 82500, POSDIV_POWER_4, 1875), /* 3 */
@@ -458,7 +458,7 @@ struct opp_table_info g_opp_table_segment_2[] = {
 	GPUOP(420000, 58750, 75000, POSDIV_POWER_4,  625), /* 37 sign off */ // Vgpu<75k, Vsram=75k // Corrigido comentário de "35"
    };
 struct opp_table_info g_opp_table_segment_3[] = {
-	GPUOP(1100000, 82500, 87500, POSDIV_POWER_2, 1875), /* 0 sign off - Vsram = Vgpu + 0.05V */
+	GPUOP(1200000, 82500, 87500, POSDIV_POWER_2, 1875), /* 0 sign off - Vsram = Vgpu + 0.05V */
 	GPUOP(1060000, 80000, 85000, POSDIV_POWER_2, 1875), /* 1 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */
 	GPUOP(1020000, 79375, 84375, POSDIV_POWER_2, 1875), /* 2 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */
 	GPUOP(980000, 78750, 83750, POSDIV_POWER_2, 1875),  /* 3 - Freq ajustada, Post Divider para P2, Vsram = Vgpu + 0.05V */

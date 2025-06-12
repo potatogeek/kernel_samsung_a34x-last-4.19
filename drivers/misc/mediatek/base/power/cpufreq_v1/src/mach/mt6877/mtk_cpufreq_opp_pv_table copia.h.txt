@@ -1,0 +1,337 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2019 MediaTek Inc.
+ * Modified for Overclock: Little 2000->2300MHz, Big 2600->3000MHz
+ * Vproc undervolt reverted; voltages set for overclocked performance.
+ */
+
+#include "mtk_cpufreq_config.h"
+#include "mtk_cpufreq_platform.h"
+
+#define NR_FREQ		16
+#define ARRAY_COL_SIZE	4
+
+/*
+ * Frequency table for CPU DVFS
+ * array_col_size = 4
+ * column 1: Target CPU Freqency (KHz)
+ * column 2: Target CPU Voltage (mV * 10) -> Vproc (Note: Original comment says mV*10, values appear to be direct mV/10 or abstract units)
+ * These are the values being undervolted.
+ * column 3: Post Divider
+ * column 4: Clock Divider
+ */
+
+static unsigned int FY_6833Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
+	/* Freq, Vproc, post_div, clk_div */
+	/* LL - Overclocked to 2300MHz max - Voltages adjusted */
+	{ 2300, 175, 1, 1 }, /* NEW: Overclocked from 2000MHz, voltage increased */ /* Restored to 175 (was 170 due to UV) */
+	{ 2150, 170, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 170 (was 165 due to UV) */
+	{ 2000, 160, 1, 1 }, /* Original max moved down */ /* Restored to 160 (was 155 due to UV) */
+	{ 1903, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1800, 148, 1, 1 }, /* Restored to 148 (was 143 due to UV) */
+	{ 1703, 143, 1, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1600, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1503, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1407, 130, 2, 1 }, /* Restored to 130 (was 125 due to UV) */
+	{ 1310, 127, 2, 1 }, /* Restored to 127 (was 122 due to UV) */
+	{ 1260, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1150, 121, 2, 1 }, /* Restored to 121 (was 116 due to UV) */
+	{ 1053, 118, 2, 1 }, /* Restored to 118 (was 115 due to UV) */
+	{ 980,  116, 2, 1 }, /* Restored to 116 (was 113 due to UV) */
+	{ 700,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 500,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+
+	/* L - Overclocked to 3000MHz max - Voltages adjusted */
+	{ 3000, 185, 1, 1 }, /* NEW: Overclocked from 2600MHz, voltage increased */ /* Restored to 185 (was 180 due to UV) */
+	{ 2800, 180, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 180 (was 175 due to UV) */
+	{ 2600, 168, 1, 1 }, /* Original max moved down */ /* Restored to 168 (was 163 due to UV) */
+	{ 2400, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 2275, 152, 1, 1 }, /* Restored to 152 (was 147 due to UV) */
+	{ 2150, 144, 1, 1 }, /* Restored to 144 (was 139 due to UV) */
+	{ 2000, 142, 1, 1 }, /* Restored to 142 (was 137 due to UV) */
+	{ 1900, 140, 1, 1 }, /* Restored to 140 (was 135 due to UV) */
+	{ 1800, 139, 1, 1 }, /* Restored to 139 (was 134 due to UV) */
+	{ 1660, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1540, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1430, 129, 2, 1 }, /* Restored to 129 (was 124 due to UV) */
+	{ 1300, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1140, 120, 2, 1 }, /* Restored to 120 (was 117 due to UV) */
+	{ 940,  117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 600,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+
+	/* CCI - Increased to support higher CPU frequencies - Voltages adjusted */
+	{ 1800, 165, 1, 1 }, /* NEW: Increased from 1700MHz */ /* Restored to 165 (was 160 due to UV) */
+	{ 1700, 160, 1, 1 }, /* Original max moved down */ /* Restored to 160 (was 155 due to UV) */
+	{ 1621, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1542, 150, 2, 1 }, /* Restored to 150 (was 145 due to UV) */
+	{ 1440, 143, 2, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1350, 136, 2, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1271, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1120, 128, 2, 1 }, /* Restored to 128 (was 123 due to UV) */
+	{ 1041, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 962,  122, 2, 1 }, /* Restored to 122 (was 119 due to UV) */
+	{ 900,  119, 2, 1 }, /* Restored to 119 (was 116 due to UV) */
+	{ 840,  117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 740,  113, 4, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 661,  110, 4, 1 }, /* Restored to 110 (was 107 due to UV) */
+	{ 600,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+	{ 560,  106, 4, 1 }, /* Restored to 106 (was 103 due to UV) */
+};
+
+static unsigned int MT6833_B25GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
+	/* Freq, Vproc, post_div, clk_div */
+	/* LL - Overclocked to 2300MHz max - Voltages adjusted */
+	{ 2300, 175, 1, 1 }, /* NEW: Overclocked from 2000MHz */ /* Restored to 175 (was 170 due to UV) */
+	{ 2150, 170, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 170 (was 165 due to UV) */
+	{ 2000, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 1903, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1800, 148, 1, 1 }, /* Restored to 148 (was 143 due to UV) */
+	{ 1703, 143, 1, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1600, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1503, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1407, 130, 2, 1 }, /* Restored to 130 (was 125 due to UV) */
+	{ 1310, 127, 2, 1 }, /* Restored to 127 (was 122 due to UV) */
+	{ 1260, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1150, 121, 2, 1 }, /* Restored to 121 (was 116 due to UV) */
+	{ 1053, 118, 2, 1 }, /* Restored to 118 (was 115 due to UV) */
+	{ 980,  116, 2, 1 }, /* Restored to 116 (was 113 due to UV) */
+	{ 900,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 740,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+
+	/* L - Overclocked to 3000MHz max - Voltages adjusted */
+	{ 3000, 185, 1, 1 }, /* NEW: Overclocked from 2500MHz */ /* Restored to 185 (was 180 due to UV) */
+	{ 2800, 180, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 180 (was 175 due to UV) */
+	{ 2500, 168, 1, 1 }, /* Original max moved down */ /* Restored to 168 (was 163 due to UV) */
+	{ 2400, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 2275, 152, 1, 1 }, /* Restored to 152 (was 147 due to UV) */
+	{ 2150, 144, 1, 1 }, /* Restored to 144 (was 139 due to UV) */
+	{ 2000, 142, 1, 1 }, /* Restored to 142 (was 137 due to UV) */
+	{ 1900, 140, 1, 1 }, /* Restored to 140 (was 135 due to UV) */
+	{ 1800, 139, 1, 1 }, /* Restored to 139 (was 134 due to UV) */
+	{ 1660, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1540, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1430, 129, 2, 1 }, /* Restored to 129 (was 124 due to UV) */
+	{ 1300, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1140, 120, 2, 1 }, /* Restored to 120 (was 117 due to UV) */
+	{ 1040, 117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 910,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+
+	/* CCI - Increased to support higher CPU frequencies - Voltages adjusted */
+	{ 1800, 165, 1, 1 }, /* NEW: Increased from 1700MHz */ /* Restored to 165 (was 160 due to UV) */
+	{ 1700, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 1621, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1542, 150, 2, 1 }, /* Restored to 150 (was 145 due to UV) */
+	{ 1440, 143, 2, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1350, 136, 2, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1271, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1120, 128, 2, 1 }, /* Restored to 128 (was 123 due to UV) */
+	{ 1041, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 962,  122, 2, 1 }, /* Restored to 122 (was 119 due to UV) */
+	{ 900,  119, 2, 1 }, /* Restored to 119 (was 116 due to UV) */
+	{ 840,  117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 740,  113, 4, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 661,  110, 4, 1 }, /* Restored to 110 (was 107 due to UV) */
+	{ 600,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+	{ 560,  106, 4, 1 }, /* Restored to 106 (was 103 due to UV) */
+};
+
+static unsigned int MT6833_B24GTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
+	/* Freq, Vproc, post_div, clk_div */
+	/* LL - Overclocked to 2300MHz max - Voltages adjusted */
+	{ 2300, 175, 1, 1 }, /* NEW: Overclocked from 2000MHz */ /* Restored to 175 (was 170 due to UV) */
+	{ 2150, 170, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 170 (was 165 due to UV) */
+	{ 2000, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 1903, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1800, 148, 1, 1 }, /* Restored to 148 (was 143 due to UV) */
+	{ 1703, 143, 1, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1600, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1503, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1407, 130, 2, 1 }, /* Restored to 130 (was 125 due to UV) */
+	{ 1310, 127, 2, 1 }, /* Restored to 127 (was 122 due to UV) */
+	{ 1260, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1150, 121, 2, 1 }, /* Restored to 121 (was 116 due to UV) */
+	{ 1053, 118, 2, 1 }, /* Restored to 118 (was 115 due to UV) */
+	{ 980,  116, 2, 1 }, /* Restored to 116 (was 113 due to UV) */
+	{ 900,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 740,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+
+	/* L - Overclocked to 3000MHz max - Voltages adjusted */
+	{ 3000, 185, 1, 1 }, /* NEW: Overclocked from 2400MHz */ /* Restored to 185 (was 180 due to UV) */
+	{ 2800, 180, 1, 1 }, /* NEW: Added intermediate step */ /* Restored to 180 (was 175 due to UV) */
+	{ 2400, 168, 1, 1 }, /* Original max moved down */ /* Restored to 168 (was 163 due to UV) */
+	{ 2320, 161, 1, 1 }, /* Restored to 161 (was 156 due to UV) */
+	{ 2240, 153, 1, 1 }, /* Restored to 153 (was 148 due to UV) */
+	{ 2150, 144, 1, 1 }, /* Restored to 144 (was 139 due to UV) */
+	{ 2000, 142, 1, 1 }, /* Restored to 142 (was 137 due to UV) */
+	{ 1900, 140, 1, 1 }, /* Restored to 140 (was 135 due to UV) */
+	{ 1800, 139, 1, 1 }, /* Restored to 139 (was 134 due to UV) */
+	{ 1660, 136, 1, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1540, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1430, 129, 2, 1 }, /* Restored to 129 (was 124 due to UV) */
+	{ 1300, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 1140, 120, 2, 1 }, /* Restored to 120 (was 117 due to UV) */
+	{ 1040, 117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 910,  113, 2, 1 }, /* Restored to 113 (was 110 due to UV) */
+
+	/* CCI - Increased to support higher CPU frequencies - Voltages adjusted */
+	{ 1800, 165, 1, 1 }, /* NEW: Increased from 1700MHz */ /* Restored to 165 (was 160 due to UV) */
+	{ 1700, 160, 1, 1 }, /* Restored to 160 (was 155 due to UV) */
+	{ 1621, 155, 1, 1 }, /* Restored to 155 (was 150 due to UV) */
+	{ 1542, 150, 2, 1 }, /* Restored to 150 (was 145 due to UV) */
+	{ 1440, 143, 2, 1 }, /* Restored to 143 (was 138 due to UV) */
+	{ 1350, 136, 2, 1 }, /* Restored to 136 (was 131 due to UV) */
+	{ 1271, 133, 2, 1 }, /* Restored to 133 (was 128 due to UV) */
+	{ 1120, 128, 2, 1 }, /* Restored to 128 (was 123 due to UV) */
+	{ 1041, 125, 2, 1 }, /* Restored to 125 (was 120 due to UV) */
+	{ 962,  122, 2, 1 }, /* Restored to 122 (was 119 due to UV) */
+	{ 900,  119, 2, 1 }, /* Restored to 119 (was 116 due to UV) */
+	{ 840,  117, 2, 1 }, /* Restored to 117 (was 114 due to UV) */
+	{ 740,  113, 4, 1 }, /* Restored to 113 (was 110 due to UV) */
+	{ 661,  110, 4, 1 }, /* Restored to 110 (was 107 due to UV) */
+	{ 600,  108, 4, 1 }, /* Restored to 108 (was 105 due to UV) */
+	{ 560,  106, 4, 1 }, /* Restored to 106 (was 103 due to UV) */
+};
+
+
+unsigned int *xrecordTbl[NUM_CPU_LEVEL] = {
+	[CPU_LEVEL_0] = &FY_6833Tbl[0][0],
+	[CPU_LEVEL_1] = &MT6833_B24GTbl[0][0],
+	[CPU_LEVEL_2] = &MT6833_B25GTbl[0][0],
+};
+
+#ifdef CCI_MAP_TBL_SUPPORT
+/* CCI_xTbl and enratio_xTbl are not modified as they do not directly represent Vproc.
+   Modifying these without full understanding could lead to instability.
+   The primary voltage adjustments are applied to Vproc in the tables above.
+*/
+static unsigned char CCI_FYTbl[32][16] = {
+	/* Normal CCI Map - Updated for overclock support */
+	{ 4, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7}, /* Updated for 2300MHz LL */
+	{ 4, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 5, 5, 6, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+
+	{ 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, /* Updated for 3000MHz Big */
+	{ 0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+	{ 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+};
+
+static unsigned char CCI_B25GTbl[32][16] = {
+	/* Normal CCI Map - Updated for overclock support */
+	{ 4, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 4, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 5, 5, 6, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+
+	{ 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
+	{ 0, 0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+	{ 0, 0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 0, 1, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+};
+
+
+static unsigned char CCI_B24GTbl[32][16] = {
+	/* Normal CCI Map */
+	{ 5, 6, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+	{ 5, 6, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
+	{ 5, 6, 6, 7, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 12, 12, 12, 12, 12},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12, 14, 15, 15, 15, 15},
+
+	{ 0, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+	{ 0, 1, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4},
+	{ 0, 1, 2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 13, 13, 13, 13, 13},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 14, 14, 14, 14},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+	{ 0, 1, 2, 2, 3, 4, 5, 6, 11, 11, 12, 14, 15, 15, 15, 15},
+};
+
+
+static unsigned char enratio_FYTbl[(NR_FREQ + 1) * IMAX_EN_RATIO_TBL_NUM] = {
+	5, 22, 23, 25, 26, 28, 30, 0, 0,
+	    0,  0,  0,  0,  0,  0, 0, 0,
+	5, 22, 23, 25, 26, 28, 30, 0, 0,
+	    0,  0,  0,  0,  0,  0, 0, 0,
+};
+
+unsigned char *xrecord_IMAX_Tbl[NUM_CPU_LEVEL] = {
+	[CPU_LEVEL_0] = enratio_FYTbl,
+	[CPU_LEVEL_1] = enratio_FYTbl,
+	[CPU_LEVEL_2] = enratio_FYTbl,
+};
+unsigned char *xrecord_CCI_Tbl[NUM_CPU_LEVEL] = {
+	[CPU_LEVEL_0] = &CCI_FYTbl[0][0],
+	[CPU_LEVEL_1] = &CCI_B24GTbl[0][0],
+	[CPU_LEVEL_2] = &CCI_B25GTbl[0][0],
+};
+#endif

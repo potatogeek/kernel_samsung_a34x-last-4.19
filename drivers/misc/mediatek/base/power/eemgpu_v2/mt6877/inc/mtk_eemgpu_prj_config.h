@@ -51,7 +51,7 @@
 //#define EARLY_PORTING_GPU
 #define NR_FREQ 16
 #define NR_FREQ_GPU 16
-#define GPU_FREQ_BASE 1100000
+#define GPU_FREQ_BASE 1200000
 #define GPU_M_FREQ_BASE 670000
 
 /*
@@ -79,7 +79,7 @@
  */
 #define LOW_TEMP_VAL		(25000)
 #define EXTRA_LOW_TEMP_VAL	(10000)
-#define HIGH_TEMP_VAL		(85000)
+#define HIGH_TEMP_VAL		(90000)
 
 /*
  * ##########################

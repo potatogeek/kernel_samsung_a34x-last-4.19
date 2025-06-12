@@ -8,12 +8,13 @@ export ARCH=arm64
 export PLATFORM_VERSION=14
 export TARGET_SOC=mt6877
 export TARGET_BUILD_VARIANT=user
-
+export CC=clang-12
 export KCFLAGS=-w
 export CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+export LD=ld.bfd
 
-make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y LLVM=1 LLVM_IAS=1 a34x_defconfig a34.config
-make -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y LLVM=1 LLVM_IAS=1 -j16
+make -j16 -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y LLVM=1 LLVM_IAS=1 a34x_defconfig a34.config
+make -j16 -C $(pwd) O=$(pwd)/out KCFLAGS=-w CONFIG_SECTION_MISMATCH_WARN_ONLY=y LLVM=1 LLVM_IAS=1 -j16
 
 cp out/arch/arm64/boot/Image $(pwd)/arch/arm64/boot/Image
 
