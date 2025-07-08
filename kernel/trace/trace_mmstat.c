@@ -144,7 +144,11 @@ static void mmstat_trace_meminfo(void)
 
 	/* available memory */
 	meminfo[num_entries++] = P2K(global_zone_page_state(NR_FREE_PAGES));
-	meminfo[num_entries++] = P2K(atomic_long_read(&nr_swap_pages));
+#ifdef CONFIG_SWAP
+    meminfo[num_entries++] = P2K(atomic_long_read(&nr_swap_pages));
+#else
+    meminfo[num_entries++] = 0;
+#endif
 	meminfo[num_entries++] = P2K(global_node_page_state(NR_FILE_PAGES));
 
 	/* user pages */
